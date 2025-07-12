@@ -1,30 +1,21 @@
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const authenticateUser = async (req, res, next) => {
     try {
-        // Get token from header
         const token = req.header('Authorization')?.replace('Bearer ', '');
-
         if (!token) {
             return res.status(401).json({ message: 'No authentication token, access denied' });
         }
-
-        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        // Find user by id
         const user = await User.findById(decoded.userId).select('-password_hash');
-        
         if (!user) {
             return res.status(401).json({ message: 'User not found' });
         }
-
         if (user.is_banned) {
             return res.status(403).json({ message: 'User is banned' });
         }
-
-        // Add user to request object
         req.user = user;
         next();
     } catch (error) {
@@ -32,4 +23,12 @@ const authenticateUser = async (req, res, next) => {
     }
 };
 
-module.exports = authenticateUser;
+const adminMiddleware = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next();
+    } else {
+        return res.status(403).json({ message: 'Admin access required' });
+    }
+};
+
+module.exports = { authenticateUser, adminMiddleware };

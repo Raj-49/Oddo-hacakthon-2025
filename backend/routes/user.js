@@ -4,8 +4,10 @@ const User = require('../models/User');
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 
+const { authenticateUser } = require('../middlewares/authMiddleware');
+
 // Get user profile
-router.get('/profile', async (req, res) => {
+router.get('/profile', authenticateUser, async (req, res) => {
     try {
         const user = await User.findById(req.user.userId).select('-password_hash');
         res.json(user);
@@ -15,7 +17,7 @@ router.get('/profile', async (req, res) => {
 });
 
 // Update user profile
-router.put('/profile', async (req, res) => {
+router.put('/profile', authenticateUser, async (req, res) => {
     try {
         const { username, email } = req.body;
         const user = await User.findById(req.user.userId);
@@ -31,7 +33,7 @@ router.put('/profile', async (req, res) => {
 });
 
 // Get user's questions
-router.get('/questions', async (req, res) => {
+router.get('/questions', authenticateUser, async (req, res) => {
     try {
         const questions = await Question.find({ user_id: req.user.userId })
             .sort({ created_at: -1 });
@@ -42,7 +44,7 @@ router.get('/questions', async (req, res) => {
 });
 
 // Get user's answers
-router.get('/answers', async (req, res) => {
+router.get('/answers', authenticateUser, async (req, res) => {
     try {
         const answers = await Answer.find({ user_id: req.user.userId })
             .populate('question_id', 'title')

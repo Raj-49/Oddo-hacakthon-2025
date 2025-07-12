@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import Modal from './components/ui/Modal';
 import './App.css';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const [modal, setModal] = React.useState(null); // 'login' | 'signup' | null
@@ -33,12 +34,13 @@ function App() {
           </Routes>
         </div>
         <Modal isOpen={modal === 'login'} onClose={closeModal}>
-          <LoginPage onSignup={openSignup} />
+          <LoginPage onSignup={openSignup} onClose={closeModal} />
         </Modal>
         <Modal isOpen={modal === 'signup'} onClose={closeModal}>
           <SignupPage onLogin={openLogin} />
         </Modal>
       </Router>
+      <ToastContainer />
     </AuthProvider>
   );
 }

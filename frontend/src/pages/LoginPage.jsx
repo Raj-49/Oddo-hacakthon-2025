@@ -4,7 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { Card, CardHeader, CardContent, Button, Input } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 
-const LoginPage = ({ onSignup }) => {
+const LoginPage = ({ onSignup, onClose }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
@@ -29,6 +29,7 @@ const LoginPage = ({ onSignup }) => {
     try {
       const result = await login(formData);
       if (result.success) {
+        if (onClose) onClose(); // Close the modal after successful login
         navigate('/');
       } else {
         setError(result.error);
