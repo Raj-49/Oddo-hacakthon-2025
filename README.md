@@ -6,6 +6,34 @@
 
 ---
 
+---
+
+## 👥 Team Details
+
+### 🧑‍💼 Team Leader
+- **Name**: Harsh Jingar  
+- **Team Name**: Team 3214  
+- **Email**: harshdjingar20@gmail.com  
+- **Phone**: 9328991856  
+
+---
+
+### 👨‍👦‍👦 Team Members
+
+#### 🔹 Shrey Shukla
+- **Email**: shreyshukla318@gmail.com  
+- **Phone**: 6351326710  
+
+#### 🔹 Nevil Sequeira
+- **Email**: sequeiranevil7@gmail.com  
+- **Phone**: 8866167226  
+
+#### 🔹 Raj Patel
+- **Email**: patelraj3142@gmail.com  
+- **Phone**: 9714547859
+
+
+
 ### 👤 User Roles
 
 | Role   | Permissions                                                                 |
