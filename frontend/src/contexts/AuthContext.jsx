@@ -18,10 +18,16 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    if (currentUser && currentUser.token) {
-      setUser(currentUser.user);
+    // Get token and user from localStorage
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    const userObj = userStr ? JSON.parse(userStr) : null;
+    if (token && userObj) {
+      setUser(userObj);
       setIsAuthenticated(true);
+    } else {
+      setUser(null);
+      setIsAuthenticated(false);
     }
     setIsLoading(false);
   }, []);
@@ -29,13 +35,19 @@ export const AuthProvider = ({ children }) => {
   const login = async ({ email, password }) => {
     try {
       const data = await authService.login(email, password);
+      // Log the raw backend response
+      console.log('Raw login response from backend:', data);
+      // Save token and user to localStorage
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
       setUser(data.user);
       setIsAuthenticated(true);
-      // Store token and role in localStorage for access control
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('role', data.user.role);
-      toast.success(`Login successful as ${data.user.role}`);
-      return { success: true };
+      toast.success(`Login successful as ${data.user?.role}`);
+      return { success: true, token: data.token, user: data.user };
     } catch (error) {
       return {
         success: false,
@@ -60,6 +72,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     authService.logout();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
     setIsAuthenticated(false);
   };

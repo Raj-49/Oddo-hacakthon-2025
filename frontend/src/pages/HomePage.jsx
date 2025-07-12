@@ -11,90 +11,36 @@ const HomePage = () => {
   const [filter, setFilter] = useState('newest');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Dummy data for demonstration
-  const dummyQuestions = [
-    {
-      id: 1,
-      title: "How to implement authentication in a React application?",
-      content: "I'm building a React app and need to implement user authentication. What's the best approach to handle login/logout and protect routes?",
-      author: {
-        name: "John Doe",
-        avatar: null,
-        reputation: 1250
-      },
-      votes: 15,
-      answers: 3,
-      views: 247,
-      tags: ["react", "authentication", "javascript"],
-      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-      hasAcceptedAnswer: false
-    },
-    {
-      id: 2,
-      title: "Best practices for state management in large React applications",
-      content: "I'm working on a large React application with complex state requirements. Should I use Redux, Context API, or something else?",
-      author: {
-        name: "Jane Smith",
-        avatar: null,
-        reputation: 2850
-      },
-      votes: 23,
-      answers: 7,
-      views: 432,
-      tags: ["react", "state-management", "redux", "context-api"],
-      createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
-      hasAcceptedAnswer: true
-    },
-    {
-      id: 3,
-      title: "How to optimize React component performance?",
-      content: "My React components are re-rendering frequently and causing performance issues. What are the best techniques to optimize component performance?",
-      author: {
-        name: "Mike Johnson",
-        avatar: null,
-        reputation: 890
-      },
-      votes: 8,
-      answers: 2,
-      views: 156,
-      tags: ["react", "performance", "optimization"],
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-      hasAcceptedAnswer: false
-    },
-    {
-      id: 4,
-      title: "Understanding JavaScript closures with practical examples",
-      content: "I'm having trouble understanding closures in JavaScript. Can someone explain them with practical examples and use cases?",
-      author: {
-        name: "Sarah Wilson",
-        avatar: null,
-        reputation: 1580
-      },
-      votes: 31,
-      answers: 5,
-      views: 789,
-      tags: ["javascript", "closures", "fundamentals"],
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-      hasAcceptedAnswer: true
-    }
-  ];
 
   useEffect(() => {
     const fetchQuestions = async () => {
       setLoading(true);
       try {
-        // In a real app, you would fetch from your API:
-        // const response = await questionsAPI.getAll({ filter, search: searchTerm });
-        // setQuestions(response.data);
-        
-        // For now, use dummy data
-        setTimeout(() => {
-          setQuestions(dummyQuestions);
-          setLoading(false);
-        }, 1000);
+        // Fetch questions from backend API
+        const response = await fetch('http://localhost:5000/api/questions');
+        const data = await response.json();
+        // Map backend data to frontend format if needed
+        const mappedQuestions = data.map(q => ({
+          id: q._id,
+          title: q.title,
+          content: q.body,
+          author: {
+            name: q.user_id?.username || 'Unknown',
+            avatar: null,
+            reputation: q.user_id?.reputation || 0
+          },
+          votes: q.votes || 0,
+          answers: Array.isArray(q.answers) ? q.answers.length : 0,
+          views: q.views || 0,
+          tags: Array.isArray(q.tags) ? q.tags.map(tag => tag.name) : [],
+          createdAt: q.createdAt,
+          hasAcceptedAnswer: q.hasAcceptedAnswer || false
+        }));
+        setQuestions(mappedQuestions);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching questions:', error);
-        setQuestions(dummyQuestions); // Fallback to dummy data
+        setQuestions([]); // Fallback to empty
         setLoading(false);
       }
     };
@@ -151,7 +97,7 @@ const HomePage = () => {
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex flex-wrap gap-2 mt-2">
+      {/* <div className="flex flex-wrap gap-2 mt-2">
         {filterButtons.map(({ key, label }) => (
           <Button
             key={key}
@@ -163,7 +109,7 @@ const HomePage = () => {
             {label}
           </Button>
         ))}
-      </div>
+      </div> */}
 
       {/* Questions List */}
       <div className="space-y-4 mt-4">
