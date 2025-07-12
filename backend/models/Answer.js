@@ -11,13 +11,14 @@ const answerSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    description: {
+    body: {
         type: String,
         required: true
     },
-    is_accepted: {
-        type: Boolean,
-        default: false
+    status: {
+        type: String,
+        enum: ['active', 'deleted', 'flagged'],
+        default: 'active'
     }
 }, {
     timestamps: true

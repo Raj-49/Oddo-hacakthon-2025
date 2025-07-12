@@ -11,6 +11,8 @@ const questionTagSchema = new mongoose.Schema({
         ref: 'Tag',
         required: true
     }
+}, {
+    timestamps: true
 });
 
 // Compound index to ensure unique question-tag combinations
