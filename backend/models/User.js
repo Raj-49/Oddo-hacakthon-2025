@@ -17,17 +17,15 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin', 'guest'],
+        enum: ['guest', 'user', 'admin'],
         default: 'user'
     },
     is_banned: {
         type: Boolean,
         default: false
-    },
-    created_at: {
-        type: Date,
-        default: Date.now
     }
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('User', userSchema);
