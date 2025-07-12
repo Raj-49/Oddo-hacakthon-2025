@@ -1,4 +1,4 @@
-# Oddo-hacakthon-2025
+# Odoo-Hackathon-2025
 ## 🧠 Problem Statement: StackIt – A Minimal Q&A Forum Platform
 
 ### 📘 Overview  
@@ -6,13 +6,12 @@
 
 ---
 
----
-
 ## 👥 Team Details
+### **Team Name**: Team 3214  
+---
 
 ### 🧑‍💼 Team Leader
 - **Name**: Harsh Jingar  
-- **Team Name**: Team 3214  
 - **Email**: harshdjingar20@gmail.com  
 - **Phone**: 9328991856  
 
@@ -32,7 +31,7 @@
 - **Email**: patelraj3142@gmail.com  
 - **Phone**: 9714547859
 
-
+---
 
 ### 👤 User Roles
 
