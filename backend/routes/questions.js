@@ -1,19 +1,38 @@
 const express = require('express');
 const router = express.Router();
 const Question = require('../models/Question');
+const Tag = require('../models/Tag');
+const QuestionTag = require('../models/QuestionTag');
 const authorize = require('../middlewares/authorize');
 const answersRouter = require('./answers');
 
 // Mount the answers router for the /questions/:questionId/answers route
 router.use('/:questionId/answers', answersRouter);
 
-// Get all questions (public)
+// Get all questions with tags (public)
 router.get('/', async (req, res) => {
     try {
         const questions = await Question.find({ status: 'active' })
             .populate('user_id', 'username')
-            .sort({ createdAt: -1 });
-        res.json(questions);
+            .sort({ createdAt: -1 })
+            .lean();
+
+        // Get tags for each question
+        const questionsWithTags = await Promise.all(questions.map(async (question) => {
+            const questionTags = await QuestionTag.find({ question_id: question._id })
+                .populate('tag_id', 'name')
+                .lean();
+            
+            return {
+                ...question,
+                tags: questionTags.map(qt => ({
+                    id: qt.tag_id._id,
+                    name: qt.tag_id.name
+                }))
+            };
+        }));
+
+        res.json(questionsWithTags);
     } catch (error) {
         console.error('Error fetching questions:', error);
         res.status(500).json({ 
@@ -23,40 +42,129 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get single question (public)
+// Get single question with tags (public)
 router.get('/:id', async (req, res) => {
     try {
         const question = await Question.findOne({ 
             _id: req.params.id,
             status: { $ne: 'deleted' }
-        }).populate('user_id', 'username');
+        })
+        .populate('user_id', 'username')
+        .lean();
         
         if (!question) {
             return res.status(404).json({ message: 'Question not found' });
         }
-        res.json(question);
+
+        // Get tags for the question
+        const questionTags = await QuestionTag.find({ question_id: question._id })
+            .populate('tag_id', 'name')
+            .lean();
+
+        const questionWithTags = {
+            ...question,
+            tags: questionTags.map(qt => ({
+                id: qt.tag_id._id,
+                name: qt.tag_id.name
+            }))
+        };
+
+        res.json(questionWithTags);
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error fetching question:', error);
+        res.status(500).json({ 
+            message: 'Server error',
+            error: error.message
+        });
     }
 });
 
-// Create question (authenticated users only)
+// Create question with tags (authenticated users only)
 router.post('/', authorize('user', 'admin'), async (req, res) => {
     try {
-        const { title, body } = req.body;
-        const question = new Question({
+        console.log('User object:', req.user); // Debug log
+        
+        // Get user ID (either from _id or userId)
+        const userId = req.user._id || req.user.userId;
+        
+        if (!userId) {
+            return res.status(401).json({ 
+                message: 'User not authenticated properly',
+                user: req.user 
+            });
+        }
+
+        const { title, body, tags } = req.body;
+
+        if (!title || !body) {
+            return res.status(400).json({ 
+                message: 'Title and body are required' 
+            });
+        }
+
+        // Create question
+        const questionData = {
             title,
             body,
-            user_id: req.user.userId,
+            user_id: userId,
             status: 'active'
-        });
+        };
+
+        console.log('Creating question with data:', questionData); // Debug log
+
+        const question = new Question(questionData);
         await question.save();
-        res.status(201).json(question);
+
+        console.log('Question saved:', question); // Debug log
+
+        // Handle tags
+        const savedTags = [];
+        if (tags && Array.isArray(tags)) {
+            for (const tagName of tags) {
+                // Normalize tag name
+                const normalizedTag = tagName.toLowerCase().trim();
+                
+                try {
+                    // Find or create tag
+                    let tag = await Tag.findOne({ name: normalizedTag });
+                    if (!tag) {
+                        tag = new Tag({ name: normalizedTag });
+                        await tag.save();
+                    }
+
+                    // Create question-tag relationship
+                    const questionTag = new QuestionTag({
+                        question_id: question._id,
+                        tag_id: tag._id
+                    });
+                    await questionTag.save();
+
+                    savedTags.push({
+                        id: tag._id,
+                        name: tag.name
+                    });
+                } catch (tagError) {
+                    console.error('Error processing tag:', tagError);
+                    // Continue with other tags if one fails
+                }
+            }
+        }
+
+        // Get the populated question
+        const populatedQuestion = await Question.findById(question._id)
+            .populate('user_id', 'username')
+            .lean();
+
+        res.status(201).json({
+            ...populatedQuestion,
+            tags: savedTags
+        });
     } catch (error) {
         console.error('Error creating question:', error);
         res.status(500).json({ 
             message: 'Server error',
-            error: error.message 
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 });
