@@ -9,6 +9,8 @@ import SignupPage from './pages/SignupPage';
 import Modal from './components/ui/Modal';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
+import QuestionDetailPage from './pages/QuestionDetailPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   const [modal, setModal] = React.useState(null); // 'login' | 'signup' | null
@@ -25,10 +27,10 @@ function App() {
             {/* Main app routes with layout */}
             <Route path="/" element={<Layout openLogin={openLogin} openSignup={openSignup}><HomePage /></Layout>} />
             <Route path="/ask" element={<Layout openLogin={openLogin} openSignup={openSignup}><AskQuestionPage /></Layout>} />
-            <Route path="/questions/:id" element={<Layout openLogin={openLogin} openSignup={openSignup}><div>Question Detail Page (Coming Soon)</div></Layout>} />
+            <Route path="/questions/:id" element={<Layout openLogin={openLogin} openSignup={openSignup}><QuestionDetailPage /></Layout>} />
             <Route path="/tags" element={<Layout openLogin={openLogin} openSignup={openSignup}><div>Tags Page (Coming Soon)</div></Layout>} />
             <Route path="/users" element={<Layout openLogin={openLogin} openSignup={openSignup}><div>Users Page (Coming Soon)</div></Layout>} />
-            <Route path="/profile" element={<Layout openLogin={openLogin} openSignup={openSignup}><div>Profile Page (Coming Soon)</div></Layout>} />
+            <Route path="/profile" element={<Layout openLogin={openLogin} openSignup={openSignup}><ProfilePage /></Layout>} />
             {/* 404 route */}
             <Route path="*" element={<Layout openLogin={openLogin} openSignup={openSignup}><div className="text-center py-12"><h2 className="text-2xl font-bold text-gray-900">Page Not Found</h2></div></Layout>} />
           </Routes>

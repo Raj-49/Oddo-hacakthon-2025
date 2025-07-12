@@ -5,6 +5,10 @@ const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const { authenticateUser } = require('../middlewares/authMiddleware');
 
+// IMPORTANT: To make this route available at /api/auth/profile, ensure in your main app.js/server.js you have:
+// app.use('/api/auth', require('./routes/user'));
+// This will make /profile accessible at /api/auth/profile for the frontend.
+
 // Get user profile with questions and answers
 router.get('/profile', authenticateUser, async (req, res) => {
     try {

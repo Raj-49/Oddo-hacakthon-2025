@@ -26,6 +26,7 @@ promotionService.startPromotionCronJob();
 
 // Auth routes (public)
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', require('./routes/user'));
 
 // User routes
 app.use('/api/users', require('./routes/user'));
