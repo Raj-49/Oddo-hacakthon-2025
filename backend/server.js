@@ -27,9 +27,13 @@ promotionService.startPromotionCronJob();
 // Auth routes (public)
 app.use('/api/auth', require('./routes/auth'));
 
+// User routes
+app.use('/api/users', require('./routes/user'));
+
 // Public routes with guest access
 app.use('/api/questions', guestMiddleware, require('./routes/questions'));
 app.use('/api/answers', guestMiddleware, require('./routes/answers'));
+app.use('/api/tags', guestMiddleware, require('./routes/tags'));
 
 // Protected routes
 app.use('/api/admin', guestMiddleware, authorize('admin'), require('./routes/admin'));
