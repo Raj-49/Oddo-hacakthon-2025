@@ -4,8 +4,10 @@ const User = require('../models/User');
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 
+const { authenticateUser, adminMiddleware } = require('../middlewares/authMiddleware');
+
 // Get all users (admin only)
-router.get('/users', async (req, res) => {
+router.get('/users', authenticateUser, adminMiddleware, async (req, res) => {
     try {
         const users = await User.find().select('-password_hash');
         res.json(users);
@@ -15,7 +17,7 @@ router.get('/users', async (req, res) => {
 });
 
 // Ban/unban user (admin only)
-router.patch('/users/:id/ban', async (req, res) => {
+router.patch('/users/:id/ban', authenticateUser, adminMiddleware, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
@@ -32,7 +34,7 @@ router.patch('/users/:id/ban', async (req, res) => {
 });
 
 // Delete question (admin only)
-router.delete('/questions/:id', async (req, res) => {
+router.delete('/questions/:id', authenticateUser, adminMiddleware, async (req, res) => {
     try {
         await Question.findByIdAndDelete(req.params.id);
         res.json({ message: 'Question deleted successfully' });
@@ -42,7 +44,7 @@ router.delete('/questions/:id', async (req, res) => {
 });
 
 // Get system statistics (admin only)
-router.get('/stats', async (req, res) => {
+router.get('/stats', authenticateUser, adminMiddleware, async (req, res) => {
     try {
         const stats = {
             users: await User.countDocuments(),
