@@ -3,7 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();  
 
-const connectDB = require("./config/databaseConnect"); //? Import database connection utility
+const connectDB = require("./config/db"); // Import database connection utility
 const authenticateUser = require("./middlewares/authMiddleware");
 const logAction = require("./middlewares/logMiddleware");
 const promotionService = require("./services/promotionService"); // For promotion logic
@@ -23,6 +23,13 @@ promotionService.startPromotionCronJob();
 // Public routes (no authentication required)
 // app.use("/v1/public", require("./routes/public"));
 
+app.get('/', (req, res) => {
+  res.send('Welcome to Odoo Hackathon 2025 API - Server is Running! 🚀');
+});
+
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log('=================================');
+  console.log('🚀 Server is up and running!');
+  console.log(`📡 URL: http://localhost:${port}`);
+  console.log('=================================');
 });
