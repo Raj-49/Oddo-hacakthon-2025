@@ -14,6 +14,10 @@ const questionSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    tags: {
+        type: [String],
+        default: []
+    },
     status: {
         type: String,
         enum: ['active', 'deleted', 'flagged'],

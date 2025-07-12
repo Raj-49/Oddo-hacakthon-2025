@@ -83,39 +83,15 @@ router.get('/:id', async (req, res) => {
 router.post('/', authorize('user', 'admin'), async (req, res) => {
     try {
         console.log('User object:', req.user); // Debug log
-        
-        // Get user ID (either from _id or userId)
-        const userId = req.user._id || req.user.userId;
-        
-        if (!userId) {
-            return res.status(401).json({ 
-                message: 'User not authenticated properly',
-                user: req.user 
-            });
-        }
-
         const { title, body, tags } = req.body;
-
-        if (!title || !body) {
-            return res.status(400).json({ 
-                message: 'Title and body are required' 
-            });
-        }
-
         // Create question
-        const questionData = {
+        const question = new Question({
             title,
             body,
-            user_id: userId,
+            user_id: req.user.userId,
             status: 'active'
-        };
-
-        console.log('Creating question with data:', questionData); // Debug log
-
-        const question = new Question(questionData);
+        });
         await question.save();
-
-        console.log('Question saved:', question); // Debug log
 
         // Handle tags
         const savedTags = [];
@@ -123,7 +99,6 @@ router.post('/', authorize('user', 'admin'), async (req, res) => {
             for (const tagName of tags) {
                 // Normalize tag name
                 const normalizedTag = tagName.toLowerCase().trim();
-                
                 try {
                     // Find or create tag
                     let tag = await Tag.findOne({ name: normalizedTag });
@@ -131,14 +106,12 @@ router.post('/', authorize('user', 'admin'), async (req, res) => {
                         tag = new Tag({ name: normalizedTag });
                         await tag.save();
                     }
-
                     // Create question-tag relationship
                     const questionTag = new QuestionTag({
                         question_id: question._id,
                         tag_id: tag._id
                     });
                     await questionTag.save();
-
                     savedTags.push({
                         id: tag._id,
                         name: tag.name

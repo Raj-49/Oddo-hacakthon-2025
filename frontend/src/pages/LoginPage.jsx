@@ -28,7 +28,15 @@ const LoginPage = ({ onSignup, onClose }) => {
 
     try {
       const result = await login(formData);
-      if (result.success) {
+      // Log the full login response
+      if (result.success && result.response) {
+        console.log('Login response:', result.response);
+        if (result.response.token) {
+          localStorage.setItem('token', result.response.token);
+        }
+        if (result.response.user) {
+          localStorage.setItem('user', JSON.stringify(result.response.user));
+        }
         if (onClose) onClose(); // Close the modal after successful login
         navigate('/');
       } else {

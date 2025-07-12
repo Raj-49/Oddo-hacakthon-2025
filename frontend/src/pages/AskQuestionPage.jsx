@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Tag, X } from 'lucide-react';
 import { Card, CardHeader, CardContent, Button, Input, Textarea } from '../components/ui';
 import { questionsAPI } from '../services/api';
-
+import { toast } from 'react-toastify';
 const AskQuestionPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -75,15 +75,15 @@ const AskQuestionPage = () => {
     setIsSubmitting(true);
     
     try {
-      // In a real app, you would submit to your API:
-      const response = await questionsAPI.create(formData);
-      navigate(`/questions/${response.data.id}`);
+      // Prepare payload for backend
+      const payload = {
+        title: formData.title,
+        body: formData.content,
+        tags: formData.tags
+      };
+      const response = await questionsAPI.create(payload);
+      toast.success('Question submitted successfully!');
       
-      // For demo, simulate API call
-      // setTimeout(() => {
-      //   console.log('Question submitted:', formData);
-      //   navigate('/'); // Redirect to home page
-      // }, 1000);
     } catch (error) {
       console.error('Error submitting question:', error);
       setErrors({ submit: 'Failed to submit question. Please try again.' });
