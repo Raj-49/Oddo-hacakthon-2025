@@ -72,10 +72,3 @@ The description editor should support:
 #### 5. Tagging  
 - Questions must include relevant tags  
 
-#### 6. Notification System  
-A notification icon (🔔) appears in the top navigation bar.  
-Users are notified when:
-- Someone answers their question  
-- Someone comments on their answer  
-- Someone mentions them using `@username`  
-The icon displays the number of unread notifications, and clicking it opens a dropdown with recent notifications.
