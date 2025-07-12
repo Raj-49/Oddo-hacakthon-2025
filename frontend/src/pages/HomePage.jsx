@@ -131,33 +131,33 @@ const HomePage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen pb-12 px-2 sm:px-0">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">All Questions</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight gradient-text">All Questions</h1>
+          <p className="text-gray-500 mt-1 text-base sm:text-lg">
             {questions.length} questions
           </p>
         </div>
-        
         <Button
           as={Link}
           to="/ask"
           variant="primary"
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 shadow-lg rounded-xl text-base sm:text-lg px-4 sm:px-6 py-2 w-full sm:w-auto"
         >
           <span>Ask Question</span>
         </Button>
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 mt-2">
         {filterButtons.map(({ key, label }) => (
           <Button
             key={key}
             variant={filter === key ? 'primary' : 'outline'}
             size="sm"
+            className={`rounded-full px-3 sm:px-4 py-1 text-sm sm:text-base font-semibold transition-all shadow ${filter === key ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50'}`}
             onClick={() => setFilter(key)}
           >
             {label}
@@ -166,104 +166,65 @@ const HomePage = () => {
       </div>
 
       {/* Questions List */}
-      <div className="space-y-4">
+      <div className="space-y-4 mt-4">
         {questions.map((question) => (
-          <Card key={question.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex space-x-4">
+          <Card key={question.id} className="hover:shadow-xl transition-shadow rounded-2xl border border-gray-100 bg-white/90 backdrop-blur-md">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 {/* Vote Section */}
-                <div className="flex flex-col items-center space-y-2 text-gray-500">
+                <div className="flex flex-row sm:flex-col items-center space-x-2 sm:space-x-0 sm:space-y-2 text-gray-500">
                   <button
                     onClick={() => handleVote(question.id, 'up')}
                     className="vote-button hover:text-blue-600"
                   >
                     <ChevronUp className="h-5 w-5" />
                   </button>
-                  <span className="text-sm font-medium">{question.votes}</span>
+                  <span className="font-bold text-lg text-blue-600">{question.votes}</span>
                   <button
                     onClick={() => handleVote(question.id, 'down')}
-                    className="vote-button hover:text-red-600"
+                    className="vote-button hover:text-red-500"
                   >
                     <ChevronDown className="h-5 w-5" />
                   </button>
                 </div>
 
-                {/* Question Stats */}
-                <div className="flex flex-col items-center space-y-2 text-gray-500 min-w-[60px]">
-                  <div className="text-center">
-                    <div className={`text-sm font-medium ${
-                      question.hasAcceptedAnswer ? 'text-green-600' : 'text-gray-900'
-                    }`}>
-                      {question.answers}
-                    </div>
-                    <div className="text-xs">answers</div>
+                {/* Main Content */}
+                <div className="flex-1">
+                  <Link to={`/questions/${question.id}`} className="text-base sm:text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+                    {question.title}
+                  </Link>
+                  <p className="text-gray-600 mt-2 text-sm sm:text-base">{truncateText(question.content, 150)}</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {question.tags.map(tag => (
+                      <Badge key={tag} className="bg-blue-100 text-blue-600 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold shadow-sm">{tag}</Badge>
+                    ))}
                   </div>
-                  <div className="text-center">
-                    <div className="text-sm font-medium">{question.views}</div>
-                    <div className="text-xs">views</div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mt-4 text-xs sm:text-sm text-gray-500">
+                    <span className="flex items-center gap-1"><Eye className="h-4 w-4" /> {question.views} views</span>
+                    <span className="flex items-center gap-1"><MessageCircle className="h-4 w-4" /> {question.answers} answers</span>
+                    <span className="flex items-center gap-1"><Calendar className="h-4 w-4" /> {formatRelativeTime(question.createdAt)}</span>
                   </div>
                 </div>
 
-                {/* Question Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <Link
-                        to={`/questions/${question.id}`}
-                        className="text-lg font-medium text-blue-600 hover:text-blue-800 block"
-                      >
-                        {question.title}
-                      </Link>
-                      <p className="text-gray-600 mt-2 text-sm leading-relaxed">
-                        {truncateText(question.content, 200)}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {question.tags.map((tag) => (
-                      <Badge key={tag} variant="primary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-
-                  {/* Author and Time */}
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center space-x-2">
-                      <Avatar
-                        name={question.author.name}
-                        src={question.author.avatar}
-                        size="sm"
-                      />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {question.author.name}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {question.author.reputation} reputation
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-xs text-gray-500 flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {formatRelativeTime(question.createdAt)}
-                    </div>
-                  </div>
+                {/* Author Section */}
+                <div className="flex flex-col items-center justify-center min-w-[60px] sm:min-w-[80px]">
+                  <Avatar name={question.author.name} src={question.author.avatar} size="sm" />
+                  <span className="text-xs font-semibold text-gray-700 mt-1">{question.author.name}</span>
+                  <span className="text-xs text-gray-400">{question.author.reputation} rep</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-
-      {/* Load More Button */}
-      <div className="flex justify-center mt-8">
-        <Button variant="outline" size="lg">
-          Load More Questions
-        </Button>
-      </div>
+      <style>{`
+        .gradient-text {
+          background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+      `}</style>
     </div>
   );
 };

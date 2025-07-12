@@ -76,14 +76,14 @@ const AskQuestionPage = () => {
     
     try {
       // In a real app, you would submit to your API:
-      // const response = await questionsAPI.create(formData);
-      // navigate(`/questions/${response.data.id}`);
+      const response = await questionsAPI.create(formData);
+      navigate(`/questions/${response.data.id}`);
       
       // For demo, simulate API call
-      setTimeout(() => {
-        console.log('Question submitted:', formData);
-        navigate('/'); // Redirect to home page
-      }, 1000);
+      // setTimeout(() => {
+      //   console.log('Question submitted:', formData);
+      //   navigate('/'); // Redirect to home page
+      // }, 1000);
     } catch (error) {
       console.error('Error submitting question:', error);
       setErrors({ submit: 'Failed to submit question. Please try again.' });
